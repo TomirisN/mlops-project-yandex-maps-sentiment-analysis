@@ -1,0 +1,9 @@
+{
+    "project_name": "Yandex Maps Sentiment Analysis",
+    "project_slug": "yandex_maps_sentiment",
+    "author_name": "Tomiris Namozova & Polina Dombrovskaya",
+    "description": "MLOps system for sentiment analysis of Yandex Maps reviews using BERT",
+    "python_version": "3.10",
+    "bert_model": "cointegrated/rubert-tiny2",
+    "docker_registry": "ghcr.io/tomirisn"
+}
