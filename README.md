@@ -34,8 +34,6 @@
       - `monitoring/`
         - `metrics.py` – метрики для Prometheus
         - `reports/` – папка для сгенерированных отчётов
-      - `db/`
-        - `models.py` – SQLAlchemy для предсказаний и событий
     - `data/` – (DVC)
       - `raw/`
       - `processed/`
