@@ -1,0 +1,8 @@
+model:
+  max_len: 128
+  batch_size: 32
+  epochs: 3
+  learning_rate: 0.00002
+
+data:
+  max_samples: 100000

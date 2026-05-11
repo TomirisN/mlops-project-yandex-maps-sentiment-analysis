@@ -1,1 +1,36 @@
- 
+ # ==================== ML Core ====================
+numpy==2.1.1                # Совместим с pandas 2.2.3 и torch 2.5.1
+pandas==2.2.3
+scikit-learn==1.5.2
+joblib==1.4.2
+torch==2.5.1
+transformers==4.46.3
+datasets==3.0.1             # Поддержка Hugging Face (включая Yandex HF mirror)
+accelerate==1.1.1           # Для Trainer и распределённого обучения
+safetensors==0.4.3          # Безопасное сохранение/загрузка моделей (рекомендовано HF)
+
+# ==================== FastAPI & Web ====================
+fastapi==0.115.6
+uvicorn[standard]==0.34.0   # Включает uvloop, httptools, websockets
+pydantic==2.9.2
+python-multipart==0.0.9     # Для поддержки форм и загрузки файлов (часто нужно FastAPI)
+prometheus-client==0.21.0   # Экспорт метрик /metrics
+
+# ==================== MLOps ====================
+mlflow==2.15.1
+dvc==3.59.2
+evidently==0.4.48           # Проверить совместимость с numpy 2.x при первом запуске
+
+# ==================== CLI & Config ====================
+click==8.1.7
+python-dotenv==1.0.1
+PyYAML==6.0.2
+
+# ==================== Dev & Linting ====================
+pytest==8.3.4
+black==24.10.0
+flake8==7.1.1
+isort==5.13.2
+tqdm==4.66.5                # Прогресс-бары для datasets и циклов обучения
+watchdog==4.0.1             # Для uvicorn --reload (особенно под Windows)
+pyarrow==17.0.0             # Явная фиксация формата Arrow для datasets
