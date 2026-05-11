@@ -1,0 +1,22 @@
+# Конфигурация для обучения BERT модели
+model:
+  name: "DeepPavlov/rubert-base-cased"
+  num_labels: 5
+  max_len: 128
+  batch_size: 32
+  epochs: 3
+  learning_rate: 0.00002
+
+data:
+  raw_path: "data/raw/geo-reviews-dataset-2023.csv"
+  max_samples: 100000
+  test_size: 0.15
+  random_state: 42
+
+mlflow:
+  tracking_uri: "http://localhost:5000"
+  experiment_name: "sentiment-bert"
+
+training:
+  device: "cuda"
+  save_best_only: true
