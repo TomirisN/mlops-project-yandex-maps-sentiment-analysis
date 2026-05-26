@@ -2,17 +2,19 @@ import joblib
 import numpy as np
 import os
 import logging
+from typing import Tuple
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 class ModelManager:
-    def __init__(self, model_path: str):
+    def __init__(self, model_path: str = "models/model.pkl"):
         self.model_path = model_path
         self.model = None
         self._is_loaded = False
         
     def load_model(self) -> bool:
+        """Загружает модель из локального файла"""
         try:
             if os.path.exists(self.model_path):
                 self.model = joblib.load(self.model_path)
@@ -26,7 +28,21 @@ class ModelManager:
             logger.error(f"❌ Load error: {e}")
             return False
     
-    def predict(self, text: str):
+    def load_from_mlflow(self, tracking_uri: str, model_name: str, stage: str = "Production") -> bool:
+        """Загружает модель из MLflow Model Registry"""
+        try:
+            import mlflow
+            mlflow.set_tracking_uri(tracking_uri)
+            model_uri = f"models:/{model_name}/{stage}"
+            self.model = mlflow.sklearn.load_model(model_uri)
+            self._is_loaded = True
+            logger.info(f"✅ Model loaded from MLflow: {model_uri}")
+            return True
+        except Exception as e:
+            logger.error(f"❌ MLflow load error: {e}")
+            return False
+    
+    def predict(self, text: str) -> Tuple[int, float]:
         if not self._is_loaded:
             raise RuntimeError("Model not loaded")
         
