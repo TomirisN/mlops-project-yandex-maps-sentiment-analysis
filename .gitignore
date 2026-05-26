@@ -1,3 +1,5 @@
  
 models/*.pkl 
 mlflow.db 
+__pycache__/ 
+mlartifacts/ 
