@@ -1,4 +1,5 @@
 [core]
-    remote = origin
-['remote "origin"']
-    url = ../git@github.com:TomirisN/mlops-project-yandex-maps-sentiment-analysis.git
+    remote = minio
+['remote "minio"']
+    url = s3://dvc-store-mlops-project
+    endpointurl = http://127.0.0.1:9000
