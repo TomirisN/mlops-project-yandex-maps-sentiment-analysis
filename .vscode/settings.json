@@ -1,0 +1,5 @@
+{
+    "powerquery.client.additionalSymbolsDirectories": [
+        "c:/my_work_repo/mlops-project-yandex-maps-sentiment-analysis/.vscode/excel-pq-symbols"
+    ]
+}

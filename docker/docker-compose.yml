@@ -1,0 +1,76 @@
+name: mlops-sentiment
+
+services:
+  minio:
+    image: quay.io/minio/minio:latest
+    container_name: mlops-minio
+    command: server /data --console-address ":9001"
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    volumes:
+      - minio-data:/data
+  minio-init:
+    image: minio/mc:latest
+    container_name: mlops-minio-init
+    depends_on:
+      - minio
+    entrypoint: >
+      /bin/sh -c "
+      sleep 8 &&
+      mc alias set myminio http://minio:9000 minioadmin minioadmin &&
+      mc mb myminio/dvc-store-mlops-project --ignore-existing &&
+      echo 'Bucket dvc-store-mlops-project ready'
+      "
+    restart: "no"
+
+  mlflow:
+    build:
+      context: .
+      dockerfile: Dockerfile.mlflow
+    container_name: mlops-mlflow
+    ports:
+      - "5000:5000"
+    volumes:
+      - ../mlruns:/mlflow/mlruns
+      - mlflow-db:/mlflow/db
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://127.0.0.1:5000/health"]
+      interval: 15s
+      timeout: 10s
+      retries: 10
+      start_period: 30s
+
+  api:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    container_name: mlops-api
+    ports:
+      - "8000:8000"
+    environment:
+      USE_MLFLOW: "true"
+      MLFLOW_TRACKING_URI: "http://mlflow:5000"
+      MLFLOW_MODEL_NAME: "yandex_maps_sentiment"
+      MLFLOW_MODEL_STAGE: "Production"
+      MODEL_PATH: "/app/models/model.pkl"
+    volumes:
+      - ../models:/app/models:ro
+      - ../mlruns:/mlflow/mlruns:ro
+    depends_on:
+      mlflow:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/api/v1/health')"]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+      start_period: 45s
+
+volumes:
+  minio-data:
+    name: minio-data
+  mlflow-db:

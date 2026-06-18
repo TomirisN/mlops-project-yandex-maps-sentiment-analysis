@@ -1,0 +1,13 @@
+.geo_reviews_venv/
+.maps/
+geo_reviews_venv/
+__pycache__/
+*.pyc
+.git/
+.vscode/
+mlflow.db
+data/raw/*.csv
+models/*.pkl
+tests/
+cookiecutter-template/
+docker/mlruns/
