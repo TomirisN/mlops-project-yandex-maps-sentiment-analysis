@@ -1,0 +1,19 @@
+stages:
+  prepare_reference:
+    cmd: python scripts/init_reference_data.py
+    deps:
+      - scripts/init_reference_data.py
+      - data/raw/geo-reviews-dataset-2023.csv
+    outs:
+      - data/reference/reference_sample.csv
+
+  train:
+    cmd: python src/core/train_mlflow.py
+    deps:
+      - src/core/train_mlflow.py
+      - data/raw/geo-reviews-dataset-2023.csv
+    outs:
+      - models/model.pkl
+      - metrics.json
+    params:
+      - configs/config.yaml

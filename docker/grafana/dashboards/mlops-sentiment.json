@@ -1,0 +1,94 @@
+{
+  "annotations": { "list": [] },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": null,
+  "links": [],
+  "panels": [
+    {
+      "datasource": "Prometheus",
+      "fieldConfig": { "defaults": { "unit": "reqps" } },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
+      "id": 1,
+      "title": "Predictions rate",
+      "type": "timeseries",
+      "targets": [
+        {
+          "expr": "sum(rate(sentiment_predictions_total[5m]))",
+          "legendFormat": "predictions/s"
+        }
+      ]
+    },
+    {
+      "datasource": "Prometheus",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 },
+      "id": 2,
+      "title": "Prediction latency (p95)",
+      "type": "timeseries",
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.95, sum(rate(sentiment_prediction_latency_seconds_bucket[5m])) by (le))",
+          "legendFormat": "p95"
+        }
+      ]
+    },
+    {
+      "datasource": "Prometheus",
+      "gridPos": { "h": 8, "w": 8, "x": 0, "y": 8 },
+      "id": 3,
+      "title": "Drift detected",
+      "type": "stat",
+      "targets": [
+        { "expr": "sentiment_drift_detected", "legendFormat": "{{drift_type}}" }
+      ]
+    },
+    {
+      "datasource": "Prometheus",
+      "gridPos": { "h": 8, "w": 8, "x": 8, "y": 8 },
+      "id": 4,
+      "title": "Drift score",
+      "type": "timeseries",
+      "targets": [
+        { "expr": "sentiment_drift_score", "legendFormat": "{{drift_type}}" }
+      ]
+    },
+    {
+      "datasource": "Prometheus",
+      "gridPos": { "h": 8, "w": 8, "x": 16, "y": 8 },
+      "id": 5,
+      "title": "Anomalies total",
+      "type": "stat",
+      "targets": [
+        { "expr": "sentiment_anomalies_total", "legendFormat": "anomalies" }
+      ]
+    },
+    {
+      "datasource": "Prometheus",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 16 },
+      "id": 6,
+      "title": "Rating distribution",
+      "type": "bargauge",
+      "targets": [
+        { "expr": "sentiment_prediction_rating_total", "legendFormat": "rating {{rating}}" }
+      ]
+    },
+    {
+      "datasource": "Prometheus",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 16 },
+      "id": 7,
+      "title": "Retrain status",
+      "type": "stat",
+      "targets": [
+        { "expr": "sentiment_retrain_status", "legendFormat": "status" }
+      ]
+    }
+  ],
+  "refresh": "10s",
+  "schemaVersion": 39,
+  "tags": ["mlops", "sentiment"],
+  "time": { "from": "now-1h", "to": "now" },
+  "title": "MLOps Sentiment Monitoring",
+  "uid": "mlops-sentiment",
+  "version": 1
+}

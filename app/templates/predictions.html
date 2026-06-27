@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}Предсказания — MLOps Sentiment{% endblock %}
+
+{% block content %}
+<h1>Последние предсказания</h1>
+<p class="subtitle">Таблица предсказаний с флагами аномалий</p>
+
+<section class="panel">
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Время</th>
+                    <th>Текст</th>
+                    <th>Рейтинг</th>
+                    <th>Истинный</th>
+                    <th>Уверенность</th>
+                    <th>Тональность</th>
+                    <th>Аномалия</th>
+                </tr>
+            </thead>
+            <tbody id="predictions-table-body"></tbody>
+        </table>
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    loadPredictions(50);
+    setInterval(() => loadPredictions(50), 10000);
+});
+</script>
+{% endblock %}

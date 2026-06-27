@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% block title %}Дашборд — MLOps Sentiment{% endblock %}
+
+{% block content %}
+<h1>Дашборд мониторинга</h1>
+<p class="subtitle">Мониторинг дрейфа, аномалий и переобучения модели</p>
+
+<section class="cards">
+    <div class="card">
+        <h3>Data Drift</h3>
+        <div id="data-drift-status" class="metric-value">—</div>
+        <div id="data-drift-score" class="metric-sub">score: —</div>
+    </div>
+    <div class="card">
+        <h3>Target Drift</h3>
+        <div id="target-drift-status" class="metric-value">—</div>
+        <div id="target-drift-score" class="metric-sub">score: —</div>
+    </div>
+    <div class="card">
+        <h3>Concept Drift</h3>
+        <div id="concept-drift-status" class="metric-value">—</div>
+        <div id="concept-drift-score" class="metric-sub">score: —</div>
+    </div>
+    <div class="card">
+        <h3>Предсказания</h3>
+        <div id="predictions-count" class="metric-value">—</div>
+        <div class="metric-sub">всего в хранилище</div>
+    </div>
+</section>
+
+<section class="panel">
+    <h2>Управление</h2>
+    <div class="actions">
+        <button id="btn-check-drift" class="btn btn-primary">Проверить дрейф</button>
+        <button id="btn-retrain" class="btn btn-warning">Запустить переобучение</button>
+        <a id="latest-report-link" href="#" class="btn btn-secondary hidden" target="_blank">Открыть отчёт Evidently</a>
+    </div>
+    <div id="retrain-status" class="status-box"></div>
+    <div id="drift-notifications" class="notifications"></div>
+</section>
+
+<section class="panel">
+    <h2>Последние предсказания</h2>
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Текст</th>
+                    <th>Рейтинг</th>
+                    <th>Уверенность</th>
+                    <th>Тональность</th>
+                    <th>Аномалия</th>
+                </tr>
+            </thead>
+            <tbody id="recent-predictions-body"></tbody>
+        </table>
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    loadDriftStatus();
+    loadPredictions(10);
+    loadRetrainStatus();
+    document.getElementById("btn-check-drift").addEventListener("click", checkDrift);
+    document.getElementById("btn-retrain").addEventListener("click", startRetrain);
+    setInterval(loadDriftStatus, 30000);
+    setInterval(loadRetrainStatus, 5000);
+});
+</script>
+{% endblock %}

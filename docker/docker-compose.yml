@@ -13,6 +13,7 @@ services:
       MINIO_ROOT_PASSWORD: minioadmin
     volumes:
       - minio-data:/data
+
   minio-init:
     image: minio/mc:latest
     container_name: mlops-minio-init
@@ -54,12 +55,20 @@ services:
     environment:
       USE_MLFLOW: "true"
       MLFLOW_TRACKING_URI: "http://mlflow:5000"
+      MLFLOW_UI_URL: "http://127.0.0.1:5000"
       MLFLOW_MODEL_NAME: "yandex_maps_sentiment"
       MLFLOW_MODEL_STAGE: "Production"
       MODEL_PATH: "/app/models/model.pkl"
+      REFERENCE_DATA_PATH: "/app/data/reference/reference_sample.csv"
+      DRIFT_REPORTS_DIR: "/app/reports/drift"
+      PREDICTIONS_DB_PATH: "/app/data/monitoring/predictions.db"
+      DRIFT_MIN_SAMPLES: "10"
     volumes:
       - ../models:/app/models:ro
       - ../mlruns:/mlflow/mlruns:ro
+      - ../data/reference:/app/data/reference:ro
+      - ../reports:/app/reports
+      - api-monitoring:/app/data/monitoring
     depends_on:
       mlflow:
         condition: service_healthy
@@ -70,7 +79,34 @@ services:
       retries: 5
       start_period: 45s
 
+  prometheus:
+    image: prom/prometheus:v2.54.1
+    container_name: mlops-prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    depends_on:
+      api:
+        condition: service_healthy
+
+  grafana:
+    image: grafana/grafana:11.2.0
+    container_name: mlops-grafana
+    ports:
+      - "3000:3000"
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: admin
+      GF_USERS_ALLOW_SIGN_UP: "false"
+    volumes:
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./grafana/dashboards:/var/lib/grafana/dashboards:ro
+    depends_on:
+      - prometheus
+
 volumes:
   minio-data:
     name: minio-data
   mlflow-db:
+  api-monitoring:

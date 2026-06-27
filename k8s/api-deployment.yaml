@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sentiment-api
+  namespace: mlops-sentiment
+  labels:
+    app: sentiment-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sentiment-api
+  template:
+    metadata:
+      labels:
+        app: sentiment-api
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8000"
+        prometheus.io/path: "/metrics"
+    spec:
+      containers:
+        - name: api
+          image: mlops-api:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8000
+              name: http
+          envFrom:
+            - configMapRef:
+                name: sentiment-api-config
+          readinessProbe:
+            httpGet:
+              path: /api/v1/health
+              port: 8000
+            initialDelaySeconds: 20
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /api/v1/health
+              port: 8000
+            initialDelaySeconds: 40
+            periodSeconds: 20
+          volumeMounts:
+            - name: monitoring-data
+              mountPath: /app/data/monitoring
+            - name: drift-reports
+              mountPath: /app/reports/drift
+      volumes:
+        - name: monitoring-data
+          emptyDir: {}
+        - name: drift-reports
+          emptyDir: {}

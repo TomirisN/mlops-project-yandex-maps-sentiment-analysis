@@ -1,0 +1,7 @@
+train:
+  max_features: 5000
+  samples_per_class: 3000
+
+drift:
+  min_samples: 30
+  data_threshold: 0.5

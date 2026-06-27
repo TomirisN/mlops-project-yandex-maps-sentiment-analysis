@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}Инференс — MLOps Sentiment{% endblock %}
+
+{% block content %}
+<h1>Инференс</h1>
+<p class="subtitle">Отправьте текст отзыва для анализа тональности</p>
+
+<section class="panel">
+    <form id="inference-form">
+        <label for="review-text">Текст отзыва</label>
+        <textarea id="review-text" rows="5" placeholder="Введите отзыв с Яндекс Карт..." required></textarea>
+
+        <label for="true-rating">Истинный рейтинг (опционально, для concept drift)</label>
+        <select id="true-rating">
+            <option value="">— не указан —</option>
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+        </select>
+
+        <button type="submit" class="btn btn-primary">Предсказать</button>
+    </form>
+
+    <div id="prediction-result" class="result-box hidden">
+        <h3>Результат</h3>
+        <p><strong>Рейтинг:</strong> <span id="result-rating"></span></p>
+        <p><strong>Тональность:</strong> <span id="result-sentiment"></span></p>
+        <p><strong>Уверенность:</strong> <span id="result-confidence"></span></p>
+        <p id="result-anomaly" class="anomaly-flag hidden"><strong>⚠ Аномалия:</strong> низкая уверенность модели</p>
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    document.getElementById("inference-form").addEventListener("submit", submitInference);
+});
+</script>
+{% endblock %}

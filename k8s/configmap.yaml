@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: sentiment-api-config
+  namespace: mlops-sentiment
+data:
+  USE_MLFLOW: "true"
+  MLFLOW_TRACKING_URI: "http://mlflow:5000"
+  MLFLOW_UI_URL: "http://localhost:5000"
+  MLFLOW_MODEL_NAME: "yandex_maps_sentiment"
+  MLFLOW_MODEL_STAGE: "Production"
+  MODEL_PATH: "/app/models/model.pkl"
+  REFERENCE_DATA_PATH: "/app/data/reference/reference_sample.csv"
+  DRIFT_REPORTS_DIR: "/app/reports/drift"
+  PREDICTIONS_DB_PATH: "/app/data/monitoring/predictions.db"
+  DRIFT_MIN_SAMPLES: "10"
+  HOST: "0.0.0.0"
+  PORT: "8000"

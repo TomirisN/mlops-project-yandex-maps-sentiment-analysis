@@ -9,6 +9,8 @@ import os
 # Важно: переменные окружения до импорта app, чтобы lifespan не ходил в MLflow.
 os.environ.setdefault("USE_MLFLOW", "false")
 os.environ.setdefault("MODEL_PATH", "models/model.pkl")
+os.environ.setdefault("DRIFT_MIN_SAMPLES", "5")
+os.environ.setdefault("REFERENCE_DATA_PATH", "data/reference/reference_sample.csv")
 
 import pytest
 from fastapi.testclient import TestClient

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}MLOps Sentiment{% endblock %}</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-brand">Yandex Maps Sentiment MLOps</div>
+        <div class="nav-links">
+            <a href="/ui" class="{% if page == 'dashboard' %}active{% endif %}">Дашборд</a>
+            <a href="/ui/inference" class="{% if page == 'inference' %}active{% endif %}">Инференс</a>
+            <a href="/ui/predictions" class="{% if page == 'predictions' %}active{% endif %}">Предсказания</a>
+            <a href="/ui/experiments" class="{% if page == 'experiments' %}active{% endif %}">Эксперименты</a>
+            <a href="{{ mlflow_url }}" target="_blank" rel="noopener">MLflow ↗</a>
+            <a href="/docs" target="_blank" rel="noopener">API ↗</a>
+        </div>
+    </nav>
+
+    <div id="drift-banner" class="drift-banner hidden"></div>
+
+    <main class="container">
+        {% block content %}{% endblock %}
+    </main>
+
+    <script src="/static/js/app.js"></script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>

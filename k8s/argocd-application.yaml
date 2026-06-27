@@ -1,0 +1,21 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: mlops-sentiment
+  namespace: argocd
+spec:
+  project: default
+  source:
+    # Замените <ORG> на ваш GitHub org/user перед apply
+    repoURL: https://github.com/TomirisN/mlops-project-yandex-maps-sentiment-analysis.git
+    targetRevision: main
+    path: k8s
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: mlops-sentiment
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

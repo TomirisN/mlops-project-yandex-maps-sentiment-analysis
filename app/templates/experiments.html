@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}Эксперименты — MLOps Sentiment{% endblock %}
+
+{% block content %}
+<h1>Эксперименты MLflow</h1>
+<p class="subtitle">Последние запуски обучения модели</p>
+
+<section class="panel">
+    <p>
+        Полный UI MLflow:
+        <a href="{{ mlflow_url }}" target="_blank" rel="noopener">{{ mlflow_url }}</a>
+    </p>
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>Run ID</th>
+                    <th>Имя</th>
+                    <th>Статус</th>
+                    <th>Accuracy</th>
+                    <th>Ссылка</th>
+                </tr>
+            </thead>
+            <tbody id="experiments-table-body"></tbody>
+        </table>
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    loadExperiments();
+});
+</script>
+{% endblock %}

@@ -19,7 +19,7 @@ prometheus-client==0.21.0   # Экспорт метрик /metrics
 # ==================== MLOps ====================
 mlflow==2.15.1
 dvc==3.59.2
-evidently==0.4.48           # Проверить совместимость с numpy 2.x при первом запуске
+evidently==0.4.40           # Drift reports (Evidently)
 
 # ==================== CLI & Config ====================
 click==8.1.7
