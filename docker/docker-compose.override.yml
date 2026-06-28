@@ -1,0 +1,7 @@
+services:
+  api:
+    environment:
+      USE_MLFLOW: "true"
+    depends_on:
+      mlflow:
+        condition: service_started

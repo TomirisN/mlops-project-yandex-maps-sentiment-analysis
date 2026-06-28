@@ -4,6 +4,21 @@
 $ErrorActionPreference = "Stop"
 $Root = Split-Path -Parent (Split-Path -Parent $MyInvocation.MyCommand.Path)
 
+$MinikubeCandidates = @(
+    "$env:ProgramFiles\Kubernetes\Minikube\minikube.exe",
+    "$env:LOCALAPPDATA\Programs\minikube\minikube.exe"
+)
+foreach ($candidate in $MinikubeCandidates) {
+    if (Test-Path $candidate) {
+        $env:PATH = "$(Split-Path $candidate);$env:PATH"
+        break
+    }
+}
+if (-not (Get-Command minikube -ErrorAction SilentlyContinue)) {
+    Write-Error "minikube не найден. Перезапустите PowerShell или: winget install Kubernetes.minikube"
+    exit 1
+}
+
 Write-Host "Starting Minikube..."
 minikube start
 

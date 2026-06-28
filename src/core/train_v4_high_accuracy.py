@@ -13,6 +13,7 @@ import numpy as np
 import pandas as pd
 from mlflow.tracking import MlflowClient
 from app.core.rating_adapter import ThreeClassToRatingEstimator
+from src.core.mlflow_utils import ensure_experiment, setup_mlflow_tracking
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics import accuracy_score, f1_score
 from sklearn.model_selection import train_test_split
@@ -82,16 +83,17 @@ def mapped_5class_accuracy(model, X_test, true_ratings) -> float:
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--tracking-uri", default=os.getenv("MLFLOW_TRACKING_URI", "http://localhost:5000"))
+    parser.add_argument("--tracking-uri", default=None)
     parser.add_argument("--model-name", default="yandex_maps_sentiment")
     parser.add_argument("--nrows", type=int, default=150000)
     parser.add_argument("--samples-per-class", type=int, default=8000)
     parser.add_argument("--no-promote", action="store_true")
     args = parser.parse_args()
 
-    mlflow.set_tracking_uri(args.tracking_uri)
-    mlflow.set_experiment("sentiment_analysis")
-    client = MlflowClient(args.tracking_uri)
+    tracking_uri = setup_mlflow_tracking(args.tracking_uri)
+    print(f"MLflow tracking: {tracking_uri}")
+    ensure_experiment("sentiment_analysis")
+    client = MlflowClient(tracking_uri)
 
     print("Loading data...")
     X, y3, y_rating = load_data(args.nrows, args.samples_per_class)

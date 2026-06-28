@@ -1,5 +1,9 @@
- 
-models/*.pkl 
-mlflow.db 
-__pycache__/ 
-mlartifacts/ 
+models/*.pkl
+mlflow.db
+__pycache__/
+mlartifacts/
+mlruns/
+train*.log
+data/monitoring/predictions.db
+reports/drift/*.html
+reports/drift/*.json

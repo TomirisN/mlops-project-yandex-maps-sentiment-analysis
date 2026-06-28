@@ -20,6 +20,8 @@ from sklearn.metrics import accuracy_score, f1_score
 from sklearn.model_selection import train_test_split
 from sklearn.pipeline import Pipeline
 
+from src.core.mlflow_utils import ensure_experiment, setup_mlflow_tracking
+
 
 @dataclass
 class ModelConfig:
@@ -180,7 +182,7 @@ def promote_best(client: MlflowClient, model_name: str, results: List[Dict[str, 
 
 def main():
     parser = argparse.ArgumentParser(description="Train multiple model versions for MLflow Registry")
-    parser.add_argument("--tracking-uri", default=os.getenv("MLFLOW_TRACKING_URI", "http://localhost:5000"))
+    parser.add_argument("--tracking-uri", default=None, help="MLflow URI (default: file://.../mlruns)")
     parser.add_argument("--model-name", default="yandex_maps_sentiment")
     parser.add_argument("--experiment", default="sentiment_analysis")
     parser.add_argument(
@@ -193,9 +195,10 @@ def main():
     parser.add_argument("--no-register", action="store_true", help="Log runs only, skip registry")
     args = parser.parse_args()
 
-    mlflow.set_tracking_uri(args.tracking_uri)
-    mlflow.set_experiment(args.experiment)
-    client = MlflowClient(args.tracking_uri)
+    tracking_uri = setup_mlflow_tracking(args.tracking_uri)
+    print(f"MLflow tracking: {tracking_uri}")
+    ensure_experiment(args.experiment)
+    client = MlflowClient(tracking_uri)
 
     if "all" in args.configs:
         selected = MODEL_CONFIGS
