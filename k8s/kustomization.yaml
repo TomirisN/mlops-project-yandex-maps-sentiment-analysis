@@ -13,5 +13,10 @@ resources:
   - grafana-deployment.yaml
   - ingress.yaml
 
+configMapGenerator:
+  - name: grafana-dashboard
+    files:
+      - mlops-sentiment.json=../docker/grafana/dashboards/mlops-sentiment.json
+
 commonLabels:
   app.kubernetes.io/part-of: mlops-sentiment

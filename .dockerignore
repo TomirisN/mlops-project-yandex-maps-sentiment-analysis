@@ -6,8 +6,8 @@ __pycache__/
 .git/
 .vscode/
 mlflow.db
-data/raw/*.csv
-models/*.pkl
+# data/raw/*.csv — включаем в образ при локальной сборке (нужно для retrain в K8s)
+# models/*.pkl — не игнорируем: нужен для bake-in в образ Minikube
 tests/
 cookiecutter-template/
 docker/mlruns/

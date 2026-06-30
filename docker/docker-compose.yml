@@ -1,4 +1,4 @@
-﻿name: mlops-sentiment
+name: mlops-sentiment
 
 services:
   minio:
@@ -53,18 +53,23 @@ services:
       - "8000:8000"
     environment:
       USE_MLFLOW: "true"
-      MLFLOW_TRACKING_URI: "file:///mlflow/mlruns"
+      MLFLOW_TRACKING_URI: "http://mlflow:5000"
       MLFLOW_UI_URL: "http://127.0.0.1:5000"
       MLFLOW_MODEL_NAME: "yandex_maps_sentiment"
       MLFLOW_MODEL_STAGE: "Production"
+      MLFLOW_AUTO_PROMOTE: "true"
       MODEL_PATH: "/app/models/model.pkl"
       REFERENCE_DATA_PATH: "/app/data/reference/reference_sample.csv"
       DRIFT_REPORTS_DIR: "/app/reports/drift"
       PREDICTIONS_DB_PATH: "/app/data/monitoring/predictions.db"
       DRIFT_MIN_SAMPLES: "10"
+      TRAIN_DATASET_PATH: "/app/data/raw/geo-reviews-dataset-2023.csv"
+      TRAIN_MAX_ROWS: "10000"
+      TRAIN_SAMPLES_PER_CLASS: "1000"
     volumes:
-      - ../models:/app/models:ro
+      - ../models:/app/models
       - ../mlruns:/mlflow/mlruns
+      - ../data/raw:/app/data/raw:ro
       - ../data/reference:/app/data/reference:ro
       - ../reports:/app/reports
       - api-monitoring:/app/data/monitoring

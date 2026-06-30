@@ -32,10 +32,14 @@ minikube service sentiment-api -n mlops-sentiment --url
 
 ## Argo CD (GitOps)
 
-1. Установите Argo CD в кластер
-2. Замените `repoURL` в `argocd-application.yaml` на URL вашего GitHub-репозитория
-3. `kubectl apply -f k8s/argocd-application.yaml`
-4. Argo CD автоматически синхронизирует `k8s/` при push в `main`
+```powershell
+.\scripts\install_argocd.ps1
+kubectl port-forward svc/argocd-server -n argocd 8080:443
+```
+
+Откройте https://localhost:8080 → Application `mlops-sentiment` → **Sync**.
+
+Подробнее: [docs/DEMO.md](../docs/DEMO.md)
 
 ## CI/CD deploy
 

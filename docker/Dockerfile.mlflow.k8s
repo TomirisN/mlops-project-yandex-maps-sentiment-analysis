@@ -1,0 +1,23 @@
+# MLflow для Minikube: mlruns запекаются в образ (контекст сборки = корень репозитория)
+FROM python:3.11-slim
+
+WORKDIR /mlflow
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN pip install --no-cache-dir \
+    "mlflow==2.15.1" \
+    querystring_parser \
+    "setuptools<81"
+
+COPY mlruns /mlflow/mlruns
+
+EXPOSE 5000
+
+CMD ["mlflow", "server", \
+     "--host", "0.0.0.0", \
+     "--port", "5000", \
+     "--backend-store-uri", "file:///mlflow/mlruns", \
+     "--default-artifact-root", "file:///mlflow/mlruns"]
