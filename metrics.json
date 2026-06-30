@@ -1,9 +1,1 @@
-{
-  "accuracy": 0.7275946005753485,
-  "f1_macro": 0.7068691412127294,
-  "accuracy_5class_mapped": 0.7275946005753485,
-  "config_name": "high-accuracy-v4",
-  "mlflow_run_id": "27cd0d08b39b428db6254f707de2b139",
-  "mlflow_version": 4,
-  "task": "3class_sentiment"
-}
+{"accuracy": 0.5678068410462777, "samples": 12424, "balanced": true, "mlflow_run_id": "c2280a0dcdaa40798bc813049b972aa8"}
