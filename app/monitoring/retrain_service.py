@@ -92,7 +92,9 @@ class RetrainService:
                         try:
                             self.on_success()
                         except Exception as exc:
-                            logger.exception("Model reload after retrain failed: %s", exc)
+                            logger.exception(
+                                "Model reload after retrain failed: %s", exc
+                            )
                             self._state.message += f" (reload: {exc})"
                 else:
                     self._state = RetrainState(

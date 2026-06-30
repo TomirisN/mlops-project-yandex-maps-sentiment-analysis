@@ -65,7 +65,9 @@ class ModelManager:
             # Docker + Windows bind mount: meta.yaml хранит C:/ пути, грузим по run_id
             docker_root = Path("/mlflow/mlruns")
             if docker_root.exists():
-                model_dir = docker_root / exp_id / run_id / "artifacts" / "sentiment_model"
+                model_dir = (
+                    docker_root / exp_id / run_id / "artifacts" / "sentiment_model"
+                )
                 if model_dir.is_dir():
                     self.model = mlflow.sklearn.load_model(str(model_dir))
                     self._is_loaded = True
