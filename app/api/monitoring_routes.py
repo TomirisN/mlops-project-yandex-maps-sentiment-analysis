@@ -133,7 +133,7 @@ async def list_experiments() -> ExperimentsResponse:
     try:
         async with httpx.AsyncClient(timeout=10.0) as client:
             exp_resp = await client.get(
-                f"{config.MLFLOW_TRACKING_URI}/api/2.0/mlflow/experiments/get-by-name",
+                f"{config.MLFLOW_API_URI}/api/2.0/mlflow/experiments/get-by-name",
                 params={"experiment_name": experiment_name},
             )
             if exp_resp.status_code != 200:
@@ -141,7 +141,7 @@ async def list_experiments() -> ExperimentsResponse:
 
             experiment_id = exp_resp.json()["experiment"]["experiment_id"]
             runs_resp = await client.get(
-                f"{config.MLFLOW_TRACKING_URI}/api/2.0/mlflow/runs/search",
+                f"{config.MLFLOW_API_URI}/api/2.0/mlflow/runs/search",
                 json={
                     "experiment_ids": [experiment_id],
                     "max_results": 20,

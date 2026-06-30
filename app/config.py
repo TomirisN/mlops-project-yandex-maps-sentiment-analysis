@@ -44,6 +44,13 @@ class Config:
         str(BASE_DIR / "src" / "core" / "train_mlflow.py"),
     )
     MLFLOW_UI_URL = os.getenv("MLFLOW_UI_URL", MLFLOW_TRACKING_URI)
+    _api_uri = os.getenv("MLFLOW_API_URI", "")
+    if _api_uri:
+        MLFLOW_API_URI = _api_uri
+    elif MLFLOW_TRACKING_URI.startswith("http"):
+        MLFLOW_API_URI = MLFLOW_TRACKING_URI
+    else:
+        MLFLOW_API_URI = MLFLOW_UI_URL.replace("127.0.0.1", "localhost")
     AUTO_RETRAIN_ON_DRIFT = os.getenv("AUTO_RETRAIN_ON_DRIFT", "true").lower() == "true"
 
 

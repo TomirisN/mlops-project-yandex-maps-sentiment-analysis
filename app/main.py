@@ -1,4 +1,5 @@
 from contextlib import asynccontextmanager
+import os
 
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
@@ -37,14 +38,40 @@ async def lifespan(app: FastAPI):
     retrain_service = RetrainService(
         train_script=config.TRAIN_SCRIPT_PATH,
         project_root=str(config.BASE_DIR),
+        train_env={
+            "MLFLOW_TRACKING_URI": config.MLFLOW_TRACKING_URI,
+            "MLFLOW_MODEL_NAME": config.MLFLOW_MODEL_NAME,
+            "MLFLOW_AUTO_PROMOTE": os.getenv("MLFLOW_AUTO_PROMOTE", "true"),
+            "TRAIN_DATASET_PATH": os.getenv(
+                "TRAIN_DATASET_PATH",
+                str(config.BASE_DIR / "data" / "raw" / "geo-reviews-dataset-2023.csv"),
+            ),
+        },
     )
 
     set_prediction_store(prediction_store)
     set_drift_detector(drift_detector)
-    set_retrain_service(retrain_service)
 
     model_manager = ModelManager(config.MODEL_PATH)
     model_source = "local"
+
+    def reload_model() -> None:
+        nonlocal model_source
+        if config.USE_MLFLOW:
+            if model_manager.load_from_mlflow(
+                config.MLFLOW_TRACKING_URI,
+                config.MLFLOW_MODEL_NAME,
+                config.MLFLOW_MODEL_STAGE,
+            ):
+                model_source = "mlflow"
+                set_model_info(True, model_source)
+                return
+        if model_manager.load_model():
+            model_source = "local"
+            set_model_info(True, model_source)
+
+    retrain_service.on_success = reload_model
+    set_retrain_service(retrain_service)
 
     if config.USE_MLFLOW:
         print(

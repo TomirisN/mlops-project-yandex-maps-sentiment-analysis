@@ -1,6 +1,7 @@
 """Фоновый запуск переобучения модели."""
 
 import logging
+import os
 import subprocess
 import sys
 import threading
@@ -24,9 +25,17 @@ class RetrainState:
 
 
 class RetrainService:
-    def __init__(self, train_script: str, project_root: str):
+    def __init__(
+        self,
+        train_script: str,
+        project_root: str,
+        train_env: Optional[dict] = None,
+        on_success=None,
+    ):
         self.train_script = Path(train_script)
         self.project_root = Path(project_root)
+        self.train_env = train_env or {}
+        self.on_success = on_success
         self._lock = threading.Lock()
         self._state = RetrainState(status="idle")
         self._thread: Optional[threading.Thread] = None
@@ -58,12 +67,15 @@ class RetrainService:
 
     def _run_training(self) -> None:
         try:
+            env = os.environ.copy()
+            env.update(self.train_env)
             result = subprocess.run(
                 [sys.executable, str(self.train_script)],
                 cwd=str(self.project_root),
                 capture_output=True,
                 text=True,
                 timeout=3600,
+                env=env,
             )
             finished_at = datetime.now(timezone.utc).isoformat()
             with self._lock:
@@ -76,6 +88,12 @@ class RetrainService:
                         exit_code=0,
                     )
                     set_retrain_status(2)
+                    if self.on_success:
+                        try:
+                            self.on_success()
+                        except Exception as exc:
+                            logger.exception("Model reload after retrain failed: %s", exc)
+                            self._state.message += f" (reload: {exc})"
                 else:
                     self._state = RetrainState(
                         status="failed",
