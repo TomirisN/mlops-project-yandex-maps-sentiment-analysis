@@ -25,7 +25,5 @@ def test_predict_with_text_returns_rating_1_to_5(client):
 
 def test_predict_empty_text_returns_422(client):
     response = client.post("/api/v1/predict", json={"text": ""})
-    print(response.status_code, response.json())  # pytest tests/ -s
-    assert response.status_code == 422
 
     assert response.status_code == 422
