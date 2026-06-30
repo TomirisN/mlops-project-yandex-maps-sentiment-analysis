@@ -1,3 +1,6 @@
+geo_reviews_venv/
+model.pkl
+tools/
 models/*.pkl
 mlflow.db
 __pycache__/
