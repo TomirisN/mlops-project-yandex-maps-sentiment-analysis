@@ -46,7 +46,15 @@ MLOps-проект для анализа тональности отзывов *
 
 ## Быстрый старт (локально)
 
-### 1. Окружение
+**Автоматическая настройка (рекомендуется):**
+
+```powershell
+.\scripts\setup_local.ps1
+```
+
+Подробное руководство для защиты: **[docs/DEMO.md](docs/DEMO.md)**
+
+### 1. Окружение (вручную)
 
 ```powershell
 python -m venv geo_reviews_venv
@@ -81,14 +89,15 @@ $env:MLFLOW_TRACKING_URI="http://127.0.0.1:5000"
 uvicorn app.main:app --host 127.0.0.1 --port 8000
 ```
 
-| URL | Назначение |
-|-----|------------|
-| http://127.0.0.1:8000/ui | Веб-дашборд |
-| http://127.0.0.1:8000/ui/inference | Страница инференса |
+
+| URL                                  | Назначение                    |
+| ------------------------------------ | --------------------------------------- |
+| http://127.0.0.1:8000/ui             | Веб-дашборд                   |
+| http://127.0.0.1:8000/ui/inference   | Страница инференса     |
 | http://127.0.0.1:8000/ui/predictions | Таблица предсказаний |
-| http://127.0.0.1:8000/ui/experiments | Эксперименты MLflow |
-| http://127.0.0.1:8000/docs | Swagger API |
-| http://127.0.0.1:8000/metrics | Prometheus-метрики |
+| http://127.0.0.1:8000/ui/experiments | Эксперименты MLflow         |
+| http://127.0.0.1:8000/docs           | Swagger API                             |
+| http://127.0.0.1:8000/metrics        | Prometheus-метрики               |
 
 ---
 
@@ -103,14 +112,15 @@ docker compose up -d
 docker compose ps
 ```
 
-| Сервис | URL | Логин |
-|--------|-----|-------|
-| Web UI | http://127.0.0.1:8000/ui | — |
-| FastAPI Swagger | http://127.0.0.1:8000/docs | — |
-| MLflow | http://127.0.0.1:5000 | — |
-| Prometheus | http://127.0.0.1:9090 | — |
-| Grafana | http://127.0.0.1:3000 | `admin` / `admin` |
-| MinIO Console | http://127.0.0.1:9001 | `minioadmin` / `minioadmin` |
+
+| Сервис    | URL                        | Логин                  |
+| --------------- | -------------------------- | --------------------------- |
+| Web UI          | http://127.0.0.1:8000/ui   | —                          |
+| FastAPI Swagger | http://127.0.0.1:8000/docs | —                          |
+| MLflow          | http://127.0.0.1:5000      | —                          |
+| Prometheus      | http://127.0.0.1:9090      | —                          |
+| Grafana         | http://127.0.0.1:3000      | `admin` / `admin`           |
+| MinIO Console   | http://127.0.0.1:9001      | `minioadmin` / `minioadmin` |
 
 Остановка: `docker compose down`
 
@@ -120,11 +130,12 @@ docker compose ps
 
 Система отслеживает три типа дрейфа:
 
-| Тип | Что сравнивается |
-|-----|------------------|
-| **Data drift** | Длина текста, число слов (KS-тест) |
-| **Target drift** | Распределение предсказанных рейтингов vs reference |
-| **Concept drift** | Сдвиг accuracy (если есть `true_rating`) или средней уверенности модели |
+
+| Тип            | Что сравнивается                                                                                |
+| ----------------- | -------------------------------------------------------------------------------------------------------------- |
+| **Data drift**    | Длина текста, число слов (KS-тест)                                                     |
+| **Target drift**  | Распределение предсказанных рейтингов vs reference                          |
+| **Concept drift** | Сдвиг accuracy (если есть`true_rating`) или средней уверенности модели |
 
 ### API
 
@@ -142,6 +153,7 @@ curl http://127.0.0.1:8000/api/v1/drift/reports
 Отчёты сохраняются в `reports/drift/drift_report_*.html`.
 
 В веб UI:
+
 - баннер с уведомлениями о дрейфе на всех страницах;
 - кнопка **«Проверить дрейф»** на дашборде;
 - ссылка на последний Evidently-отчёт.
@@ -164,12 +176,13 @@ curl http://127.0.0.1:8000/api/v1/drift/reports
 
 ## Веб UI
 
-| Страница | Функции |
-|----------|---------|
-| `/ui` | Дашборд: drift-метрики, уведомления, кнопки «Проверить дрейф» и «Переобучение» |
-| `/ui/inference` | Форма инференса, опциональный `true_rating` для concept drift |
-| `/ui/predictions` | Таблица последних предсказаний с флагами аномалий |
-| `/ui/experiments` | Список MLflow-экспериментов |
+
+| Страница  | Функции                                                                                                                               |
+| ----------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| `/ui`             | Дашборд: drift-метрики, уведомления, кнопки «Проверить дрейф» и «Переобучение» |
+| `/ui/inference`   | Форма инференса, опциональный`true_rating` для concept drift                                                    |
+| `/ui/predictions` | Таблица последних предсказаний с флагами аномалий                                                |
+| `/ui/experiments` | Список MLflow-экспериментов                                                                                               |
 
 ### Переобучение
 
@@ -178,7 +191,7 @@ curl -X POST http://127.0.0.1:8000/api/v1/retrain
 curl http://127.0.0.1:8000/api/v1/retrain/status
 ```
 
-Запускает `src/core/train_mlflow.py` в фоне. После успеха переведите новую версию модели в **Production** в MLflow и перезапустите API.
+Запускает `src/core/train_mlflow.py` в фоне. После успеха модель автоматически регистрируется в MLflow (**Production**) и перезагружается в API без рестарта контейнера.
 
 ---
 
@@ -231,11 +244,12 @@ Argo CD будет автоматически синхронизировать `
 
 Сейчас в реестре `yandex_maps_sentiment`:
 
-| Версия | Стадия | Accuracy | Описание |
-|--------|--------|----------|----------|
-| **v1** | Staging | 0.568 | Базовая: TF-IDF 5k, unigrams |
-| **v2** | **Production** | **0.575** | Улучшенная: TF-IDF 10k, bi-grams |
-| **v3** | Staging | 0.562 | Эксперимент с 15k features (хуже v2) |
+
+| Версия | Стадия   | Accuracy  | Описание                                     |
+| ------------ | -------------- | --------- | ---------------------------------------------------- |
+| **v1**       | Staging        | 0.568     | Базовая: TF-IDF 5k, unigrams                  |
+| **v2**       | **Production** | **0.575** | Улучшенная: TF-IDF 10k, bi-grams           |
+| **v3**       | Staging        | 0.562     | Эксперимент с 15k features (хуже v2) |
 
 **Где смотреть в MLflow:** http://127.0.0.1:5000 → **Models** → `yandex_maps_sentiment` → вкладки Versions / Stages.
 
@@ -268,16 +282,17 @@ cd docker; docker compose restart api
 
 ---
 
-| Метод | Путь | Описание |
-|-------|------|----------|
-| POST | `/api/v1/predict` | Предсказание тональности |
-| GET | `/api/v1/health` | Статус модели |
-| GET | `/api/v1/predictions` | Последние предсказания |
-| POST | `/api/v1/drift/check` | Запуск проверки дрейфа |
-| GET | `/api/v1/drift/status` | Статус дрейфа |
-| POST | `/api/v1/retrain` | Запуск переобучения |
-| GET | `/api/v1/experiments` | Список MLflow-экспериментов |
-| GET | `/metrics` | Prometheus-метрики |
+
+| Метод | Путь               | Описание                                |
+| ---------- | ---------------------- | ----------------------------------------------- |
+| POST       | `/api/v1/predict`      | Предсказание тональности |
+| GET        | `/api/v1/health`       | Статус модели                       |
+| GET        | `/api/v1/predictions`  | Последние предсказания     |
+| POST       | `/api/v1/drift/check`  | Запуск проверки дрейфа      |
+| GET        | `/api/v1/drift/status` | Статус дрейфа                       |
+| POST       | `/api/v1/retrain`      | Запуск переобучения           |
+| GET        | `/api/v1/experiments`  | Список MLflow-экспериментов  |
+| GET        | `/metrics`             | Prometheus-метрики                       |
 
 ### POST /api/v1/predict
 
@@ -304,17 +319,18 @@ cd docker; docker compose restart api
 
 ## Переменные окружения
 
-| Переменная | По умолчанию | Описание |
-|------------|--------------|----------|
-| `USE_MLFLOW` | `true` | Загрузка модели из MLflow |
-| `MLFLOW_TRACKING_URI` | `http://localhost:5000` | Адрес MLflow |
-| `MLFLOW_MODEL_NAME` | `yandex_maps_sentiment` | Имя модели |
-| `MLFLOW_MODEL_STAGE` | `Production` | Стадия модели |
-| `REFERENCE_DATA_PATH` | `data/reference/reference_sample.csv` | Reference для drift |
-| `DRIFT_MIN_SAMPLES` | `30` | Мин. предсказаний для drift |
-| `ANOMALY_CONFIDENCE_THRESHOLD` | `0.4` | Порог аномалии |
-| `PREDICTIONS_DB_PATH` | `data/monitoring/predictions.db` | SQLite БД |
-| `AUTO_RETRAIN_ON_DRIFT` | `true` | Автозапуск переобучения при drift |
+
+| Переменная           | По умолчанию               | Описание                                           |
+| ------------------------------ | ------------------------------------- | ---------------------------------------------------------- |
+| `USE_MLFLOW`                   | `true`                                | Загрузка модели из MLflow                  |
+| `MLFLOW_TRACKING_URI`          | `http://localhost:5000`               | Адрес MLflow                                          |
+| `MLFLOW_MODEL_NAME`            | `yandex_maps_sentiment`               | Имя модели                                        |
+| `MLFLOW_MODEL_STAGE`           | `Production`                          | Стадия модели                                  |
+| `REFERENCE_DATA_PATH`          | `data/reference/reference_sample.csv` | Reference для drift                                     |
+| `DRIFT_MIN_SAMPLES`            | `30`                                  | Мин. предсказаний для drift              |
+| `ANOMALY_CONFIDENCE_THRESHOLD` | `0.4`                                 | Порог аномалии                                |
+| `PREDICTIONS_DB_PATH`          | `data/monitoring/predictions.db`      | SQLite БД                                                |
+| `AUTO_RETRAIN_ON_DRIFT`        | `true`                                | Автозапуск переобучения при drift |
 
 ---
 
@@ -356,13 +372,14 @@ cookiecutter cookiecutter-template/
 
 GitHub Actions (`.github/workflows/ci-cd.yml`):
 
-| Job | Когда | Что делает |
-|-----|-------|------------|
-| **test** | push/PR | pytest |
-| **lint** | push/PR | flake8 + black (`app/`, `tests/`) |
-| **docker** | push/PR | сборка образа API |
-| **publish** | push в **main** | push образов API + MLflow в GHCR |
-| **deploy** | push в **main** | `kubectl apply -f k8s/` (если задан secret `KUBE_CONFIG`) |
+
+| Job         | Когда      | Что делает                                                |
+| ----------- | --------------- | ------------------------------------------------------------------ |
+| **test**    | push/PR         | pytest                                                             |
+| **lint**    | push/PR         | flake8 + black (`app/`, `tests/`)                                  |
+| **docker**  | push/PR         | сборка образа API                                      |
+| **publish** | push в**main** | push образов API + MLflow в GHCR                           |
+| **deploy**  | push в**main** | `kubectl apply -f k8s/` (если задан secret `KUBE_CONFIG`) |
 
 ---
 
@@ -405,18 +422,19 @@ GitHub Actions (`.github/workflows/ci-cd.yml`):
 
 ## Чек-лист лабораторной (все пункты)
 
-| № | Требование | Статус | Где |
-|---|------------|--------|-----|
-| 1 | Датасет + модель | ✅ | `data/raw/`, `src/core/` |
-| 2 | Git + conventional commits + DVC | ✅ | `docs/GITFLOW.md`, `dvc.yaml` |
-| 3 | Cookiecutter | ✅ | `cookiecutter-template/` |
-| 4 | MLflow | ✅ | `:5000`, `mlruns/` |
-| 5 | CI/CD (lint, test, build, deploy) | ✅ | `.github/workflows/ci-cd.yml` |
-| 6 | FastAPI + Docker + Compose | ✅ | `app/`, `docker/` |
-| 7 | Drift + Prometheus + Grafana | ✅ | `app/monitoring/`, `:9090`, `:3000` |
-| 8 | Evidently-отчёты | ✅ | `reports/drift/` |
-| 9 | Web UI | ✅ | `/ui/*` |
-| 10 | Argo CD + Kubernetes | ✅ | `k8s/`, `scripts/deploy_minikube.ps1` |
-| 11 | README | ✅ | этот файл |
+
+| № | Требование              | Статус | Где                                |
+| -- | --------------------------------- | ------------ | ------------------------------------- |
+| 1  | Датасет + модель     | ✅           | `data/raw/`, `src/core/`              |
+| 2  | Git + conventional commits + DVC  | ✅           | `docs/GITFLOW.md`, `dvc.yaml`         |
+| 3  | Cookiecutter                      | ✅           | `cookiecutter-template/`              |
+| 4  | MLflow                            | ✅           | `:5000`, `mlruns/`                    |
+| 5  | CI/CD (lint, test, build, deploy) | ✅           | `.github/workflows/ci-cd.yml`         |
+| 6  | FastAPI + Docker + Compose        | ✅           | `app/`, `docker/`                     |
+| 7  | Drift + Prometheus + Grafana      | ✅           | `app/monitoring/`, `:9090`, `:3000`   |
+| 8  | Evidently-отчёты            | ✅           | `reports/drift/`                      |
+| 9  | Web UI                            | ✅           | `/ui/*`                               |
+| 10 | Argo CD + Kubernetes              | ✅           | `k8s/`, `scripts/deploy_minikube.ps1` |
+| 11 | README                            | ✅           | этот файл                     |
 
 **MLOps-цикл:** данные (DVC) → predict (UI) → drift → автопереобучение (`AUTO_RETRAIN_ON_DRIFT`) → MLflow → restart API → Grafana.
